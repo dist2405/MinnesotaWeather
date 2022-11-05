@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Minnesota Weather</title>
+    <link rel="stylesheet" href="/css/foundation.css">
+
+	<script type="text/javascript">
+		function ifelsefunction() { 
+		
+				document.body.style.backgroundColor = "Blue";
+			
+		} 
+		</script>
+
+
+
+	
+		 
+		</head>
+		 
+		<body>
+		    <div class="off-canvas-wrapper ">
+				<!-- Your menu or Off-canvas content goes here -->
+				<div class="off-canvas position-left hide-for-small-only" id="offCanvas" data-off-canvas>
+					<!-- Close button -->
+					<button class="close-button" aria-label="Close menu" type="button" data-close>
+						<span aria-hidden="true">&times;</span>
+					</button>
+		
+					<!-- Menu -->
+					<ul class="vertical menu" style="background-color:rgb(193, 219, 219)" font="color:white">
+						<li><a href="/">Home</a></li>
+						<li><a href="/county/">County</a></li>
+						<li><a href="/weather/">Weather</a></li>
+						<li><a href="/year/">Year</a></li>
+						
+					</ul>
+				   
+				</div>
+				<div class="grid-x grid-padding-x">
+					<button type="button" class="cell large-auto button hide-for-small-only" style="background-color:rgb(65, 122, 122)" data-toggle="offCanvas">More About Me!</button>
+				</div>
+		<div class="ifelsediv">
+		<label>Select A Grouping: </label>
+		<select id="selpage">
+ 
+			<option value="county">County</option>
+			 
+			<option value="weather">Weather</option>
+			 
+			<option value="year">Year</option>
+			 
+		</select>
+		<button onclick="ifelsefunction()">Apply selected option</button>
+		</div> 
+		</body>
+		 
+		</html>
+		
+		
+	
+
+
+		
+
+
+</body>
+</html>
