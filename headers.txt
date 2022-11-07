@@ -1,3 +1,5 @@
+Table: "Users"
+
 event_id,
 cz_name,
 deaths_direct,
@@ -14,3 +16,8 @@ end_lat,
 end_lon,
 type,
 date_time
+
+
+Table: "Types"
+id,
+name
