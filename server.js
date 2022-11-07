@@ -46,7 +46,7 @@ app.get('/:selected_template/:selected_grouping', (req, res) => {
 
         if(req.params.selected_template = "weather"){
 
-        }
+        };
         res.status(200).type('html').send(template); // <-- you may need to change this
     });
 });
