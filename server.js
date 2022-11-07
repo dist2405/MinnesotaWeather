@@ -15,7 +15,7 @@ let app = express();
 let port = 8000;
 
 // Open SQLite3 database (in read-only mode)
-let db = new sqlite3.Database(db_filename, sqlite3.OPEN_READONLY, (err) => {
+let db = new sqlite3.Database(db_filename, db_filename.OPEN_READONLY, (err) => {
     if (err) {
         console.log('Error opening ' + path.basename(db_filename));
     }
@@ -30,7 +30,7 @@ app.use(express.static(public_dir));
 
 // GET request handler for home page '/' (redirect to desired route)
 app.get('/', (req, res) => {
-    let home = '/home.html'; // <-- change this
+    let home = 'index.html'; // <-- change this
     res.redirect(home);
 });
 
