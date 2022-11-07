@@ -30,7 +30,7 @@ app.use(express.static(public_dir));
 
 // GET request handler for home page '/' (redirect to desired route)
 app.get('/', (req, res) => {
-    let home = '/index.html'; // <-- change this
+    let home = '/home.html'; // <-- change this
     res.redirect(home);
 });
 
