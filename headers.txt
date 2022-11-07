@@ -1,5 +1,4 @@
 Table: "Users"
-
 event_id,
 cz_name,
 deaths_direct,
