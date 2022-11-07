@@ -30,22 +30,24 @@ app.use(express.static(public_dir));
 
 // GET request handler for home page '/' (redirect to desired route)
 app.get('/', (req, res) => {
-    let home = ''; // <-- change this
+    let home = '/index.html'; // <-- change this
     res.redirect(home);
 });
 
-/*
+
 // Example GET request handler for data about a specific year
-app.get('/year/:selected_year', (req, res) => {
-    console.log(req.params.selected_year);
-    fs.readFile(path.join(template_dir, 'year.html'), (err, template) => {
+
+app.get('/:selected_template/:selected_grouping', (req, res) => {
+    console.log(req.params.selected_grouping);
+
+    fs.readFile(path.join(template_dir,req.params.selected_template, '.html'), (err, template) => {
         // modify `template` and send response
         // this will require a query to the SQL database
 
         res.status(200).type('html').send(template); // <-- you may need to change this
     });
 });
-*/
+
 
 app.listen(port, () => {
     console.log('Now listening on port ' + port);
