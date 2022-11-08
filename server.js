@@ -9,13 +9,13 @@ let sqlite3 = require('sqlite3');
 
 let public_dir = path.join(__dirname, 'public');
 let template_dir = path.join(__dirname, 'templates');
-let db_filename = path.join(__dirname, 'db', 'mn_weather.sqlite3'); // <-- change this
+let db_filename = path.join(__dirname, 'mn_weather.sqlite3'); // <-- change this
 
 let app = express();
 let port = 8000;
 
 // Open SQLite3 database (in read-only mode)
-let db = new sqlite3.Database(db_filename, db_filename.OPEN_READONLY, (err) => {
+let db = new sqlite3.Database(db_filename, sqlite3.OPEN_READONLY, (err) => {
     if (err) {
         console.log('Error opening ' + path.basename(db_filename));
     }
@@ -37,17 +37,32 @@ app.get('/', (req, res) => {
 
 // Example GET request handler for data about a specific year
 
-app.get('/:selected_template/:selected_grouping', (req, res) => {
-    console.log(req.params.selected_grouping);
+app.get('/:selected_template/', (req, res) => {
+    console.log(req.params.selected_template);
 
-    fs.readFile(path.join(template_dir,req.params.selected_template, '.html'), (err, template) => {
+    fs.readFile(path.join(template_dir,req.params.selected_template+'.html'), 'utf-8', (err, template) => {
         // modify `template` and send response
         // this will require a query to the SQL database
-
+        
+        let selection_table = '';
         if(req.params.selected_template = "weather"){
-
+            let selectionquery = "SELECT name FROM Types";
+            console.log(selectionquery);
+            db.all(selectionquery,(err, rows)=>{
+                let i;
+                for (i=0;i< rows.length;i++){
+                    selection_table = selection_table + ' <option value=' + rows[i].name + '>';
+                    selection_table = selection_table  + rows[i].name.replace('"','').replace('"','') + '</option>';
+                }
+                let response = template.replace('%%SelectionOptions%%',selection_table);
+                res.status(200).type('html').send(response); 
+            });
         };
-        res.status(200).type('html').send(template); // <-- you may need to change this
+
+        
+        
+        
+        // <-- you may need to change this
     });
 });
 
