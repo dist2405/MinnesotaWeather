@@ -37,17 +37,26 @@ app.get('/', (req, res) => {
 
 // Example GET request handler for data about a specific year
 app.get('/favicon.ico', (req, res) => res.status(204));
-
+let selection_table = "";
+let selectionquery = "";
+let heading = "";
+let nextbutton = "";
+let prevbutton = "";
 app.get('/:selected_template', (req, res) => {
     console.log(req.params.selected_template);
     fs.readFile(path.join(template_dir,req.params.selected_template +'.html'), 'utf-8', (err, template) => {
         // modify `template` and send response
         // this will require a query to the SQL database
         
-        let selection_table = '';
-        let selectionquery = "";
+        
+   
         if(req.params.selected_template = "weather"){
-             selectionquery = "SELECT name FROM Types";
+             selectionquery = "SELECT name FROM Types ORDER BY name";
+             heading = "Types of Weather Systems";
+             nextbutton = "/weather/hail/"
+             prevbutton = "/weather/tornado/"
+             
+             
         }
         else if(req.params.selected_template = "year"){
             selectionquery = "";
@@ -62,6 +71,9 @@ app.get('/:selected_template', (req, res) => {
                     selection_table = selection_table  + rows[i].name.replace('"','').replace('"','') + '</option>';
                 }
                 let response = template.replace('%%SelectionOptions%%',selection_table);
+                response = response.replace('%%heading%%',heading);
+                response = response.replace('%%next%%',nextbutton);
+                response = response.replace('%%previous%%',prevbutton);
                 res.status(200).type('html').send(response); 
             });
             
