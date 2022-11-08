@@ -37,17 +37,24 @@ app.get('/', (req, res) => {
 
 // Example GET request handler for data about a specific year
 app.get('/favicon.ico', (req, res) => res.status(204));
+
 app.get('/:selected_template', (req, res) => {
     console.log(req.params.selected_template);
-
     fs.readFile(path.join(template_dir,req.params.selected_template +'.html'), 'utf-8', (err, template) => {
         // modify `template` and send response
         // this will require a query to the SQL database
         
         let selection_table = '';
+        let selectionquery = "";
         if(req.params.selected_template = "weather"){
-            let selectionquery = "SELECT name FROM Types";
-            console.log(selectionquery);
+             selectionquery = "SELECT name FROM Types";
+        }
+        else if(req.params.selected_template = "year"){
+            selectionquery = "";
+        }
+        else if(req.params.selected_template = "county"){
+            selectionquery = "";
+        };
             db.all(selectionquery,(err, rows)=>{
                 let i;
                 for (i=0;i< rows.length;i++){
@@ -57,13 +64,10 @@ app.get('/:selected_template', (req, res) => {
                 let response = template.replace('%%SelectionOptions%%',selection_table);
                 res.status(200).type('html').send(response); 
             });
-             
-        };
-
-        
-        
-        
+            
+      
         // <-- you may need to change this
+        
     });
 });
 
