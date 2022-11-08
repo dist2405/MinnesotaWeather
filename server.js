@@ -36,11 +36,11 @@ app.get('/', (req, res) => {
 
 
 // Example GET request handler for data about a specific year
-
-app.get('/:selected_template/', (req, res) => {
+app.get('/favicon.ico', (req, res) => res.status(204));
+app.get('/:selected_template', (req, res) => {
     console.log(req.params.selected_template);
 
-    fs.readFile(path.join(template_dir,req.params.selected_template+'.html'), 'utf-8', (err, template) => {
+    fs.readFile(path.join(template_dir,req.params.selected_template +'.html'), 'utf-8', (err, template) => {
         // modify `template` and send response
         // this will require a query to the SQL database
         
@@ -57,6 +57,7 @@ app.get('/:selected_template/', (req, res) => {
                 let response = template.replace('%%SelectionOptions%%',selection_table);
                 res.status(200).type('html').send(response); 
             });
+             
         };
 
         
