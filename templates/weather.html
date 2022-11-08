@@ -9,7 +9,7 @@
     <script type="text/javascript">
 		function ifelsefunction() { 
 		
-            let url = "/weather/" + document.getElementById("selpage").value
+            let url = "/weather/" + document.getElementById("selpage").value.replace(' ','_')
             window.open(url,"_self");
             
 		} 
@@ -48,7 +48,8 @@
                     <select id="selpage">
          
                          <!--<option value="county">County</option> -->
-                    %%SelectionOptions%%
+
+                         %%SelectionOptions%%
                  
 
                     
