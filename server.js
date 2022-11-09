@@ -54,7 +54,7 @@ app.get('/:selected_template/', (req, res) => {
         if(req.params.selected_template = "weather"){
              selectionquery = "SELECT name,SUM(deaths_direct) AS deaths_direct , SUM(deaths_indirect) AS deaths_indirect\
              ,SUM(damage_property ) AS damage_property,SUM(damage_crops) AS damage_crops, SUM(injuries_direct) AS injuries_direct\
-             , SUM(injuries_indirect) as injuries_indirect FROM Users LEFT JOIN Types ON Users.type = Types.id GROUP BY name;";
+             , SUM(injuries_indirect) as injuries_indirect FROM Users LEFT JOIN Types ON Users.type = Types.id GROUP BY name";
 
              heading = "Types of Weather Systems";
              nextbutton = "/weather/hail/"
@@ -75,7 +75,7 @@ app.get('/:selected_template/', (req, res) => {
                 for (i=0;i< rows.length;i++){
                     selection_table = selection_table + ' <option value=' + rows[i].name + '>';
                     selection_table = selection_table  + rows[i].name.replace('"','').replace('"','') + '</option>';
-                    summary_table = summary_table + '<tr><td>' + rows[i].name + '</td>';
+                    summary_table = summary_table + '<tr><td>' + rows[i].name.replace('"','').replace('"','') + '</td>';
                     summary_table = summary_table + '<td>' + rows[i].deaths_direct + '</td>';
                     summary_table = summary_table + '<td>' + rows[i].deaths_indirect + '</td>';
                     summary_table = summary_table + '<td>' + rows[i].damage_property + '</td>';
@@ -96,6 +96,7 @@ app.get('/:selected_template/', (req, res) => {
 });
 heading = '';
 response = '';
+summaryquery = '';
 
 //get request for a specific grouping
 app.get('/:selected_template/:selected_grouping/', (req, res) => {
@@ -103,6 +104,11 @@ app.get('/:selected_template/:selected_grouping/', (req, res) => {
 
     if(req.params.selected_template = "weather"){
         selectionquery = "SELECT name FROM Types";
+        summaryquery = "SELECT cz_name,name,SUM(deaths_direct) AS deaths_direct , SUM(deaths_indirect) AS deaths_indirect\
+             ,SUM(damage_property ) AS damage_property,SUM(damage_crops) AS damage_crops, SUM(injuries_direct) AS injuries_direct\
+             , SUM(injuries_indirect) as injuries_indirect,  strftime('%Y',date_time) as Year, strftime('%M', date_time)\
+              FROM Users LEFT JOIN Types ON Users.type = Types.id GROUP BY name,strftime('%Y',date_time),strftime('%M', date_time)\
+              , cz_name ";
         tablequery= '';
         heading = req.params.selected_grouping.replace('_',' ');
         nextbutton = "/weather/";
@@ -111,15 +117,17 @@ app.get('/:selected_template/:selected_grouping/', (req, res) => {
    };
   
        db.all(selectionquery,(err, rows) =>{
-                selection_table = '';
+            selection_table = '';
+            summary_table = '';
            let i;
            for (i=0;i< rows.length;i++){
-               selection_table = selection_table + ' <option value=' + rows[i].name + '>';
-               selection_table = selection_table  + rows[i].name.replace('"','').replace('"','') + '</option>';
+                selection_table = selection_table + ' <option value=' + rows[i].name + '>';
+                selection_table = selection_table  + rows[i].name.replace('"','').replace('"','') + '</option>';
         };
            
            
            let response = template.replace('%%SelectionOptions%%',selection_table);
+           response = response.replace('%%Weather_table%%',summary_table);
            response = response.replace('%%heading%%',heading);
            response = response.replace('%%next%%',nextbutton);
            response = response.replace('%%previous%%',prevbutton);
