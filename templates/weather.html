@@ -9,11 +9,12 @@
     <script type="text/javascript">
 		function ifelsefunction() { 
 		
-            let url = "/weather/" + document.getElementById("selpage").value.replace(' ','_')
+            let url = "/weather/" + document.getElementById("selpage").value.replace(' ','_') +'/';
             window.open(url,"_self");
             
-		} 
+		} ;
 		</script>
+
 </head>
 <body>
 
@@ -24,6 +25,7 @@
             <button class="close-button" aria-label="Close menu" type="button" data-close>
                 <span aria-hidden="true">&times;</span>
             </button>
+        
 
             <!-- Menu -->
             <ul class="vertical menu" style="background-color:rgb(193, 219, 219)" font="color:white">
@@ -32,8 +34,8 @@
 				<li><a href="/weather/">Weather</a></li>
 				<li><a href="/year/">Year</a></li>
             </ul>
-           
-        </div>
+        </div>  
+        
         <div class="grid-x grid-padding-x">
             <button type="button" class="cell large-auto button hide-for-small-only" style="background-color:rgb(65, 122, 122)" data-toggle="offCanvas">More Weather Choices!</button>
         </div>
@@ -56,6 +58,22 @@
                      
                      </select>
                 <button onclick="ifelsefunction()">Apply selected option</button>
+                <div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="weather_table">Weather Type</th>
+                                <th>Deaths Direct</th>
+                                <th>Deaths Indirect</th>
+                                <th></th>
+                                <th>Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            %%Weather_table%%
+                        </tbody>
+                    </table>
+                </div>
                 </div>
                 <div class="grid-x grid-padding-x">
                     <div class="cell large-18" style="background-color: #e7e9e9;">
