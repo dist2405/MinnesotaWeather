@@ -42,7 +42,7 @@ let selectionquery = "";
 let heading = "";
 let nextbutton = "";
 let prevbutton = "";
-app.get('/:selected_template', (req, res) => {
+app.get('/:selected_template/', (req, res) => {
     console.log(req.params.selected_template);
     fs.readFile(path.join(template_dir,req.params.selected_template +'.html'), 'utf-8', (err, template) => {
         // modify `template` and send response
@@ -66,6 +66,7 @@ app.get('/:selected_template', (req, res) => {
         };
             db.all(selectionquery,(err, rows)=>{
                 let i;
+                selection_table = '';
                 for (i=0;i< rows.length;i++){
                     selection_table = selection_table + ' <option value=' + rows[i].name + '>';
                     selection_table = selection_table  + rows[i].name.replace('"','').replace('"','') + '</option>';
@@ -75,12 +76,36 @@ app.get('/:selected_template', (req, res) => {
                 response = response.replace('%%next%%',nextbutton);
                 response = response.replace('%%previous%%',prevbutton);
                 res.status(200).type('html').send(response); 
-            });
-            
-      
-        // <-- you may need to change this
-        
+            });    
     });
+});
+heading = '';
+response = '';
+
+app.get('/:selected_template/:selected_grouping/', (req, res) => {
+    fs.readFile(path.join(template_dir,req.params.selected_template +'.html'), 'utf-8', (err, template) => {
+        console.log(req.params.selected_template);
+        console.log(req.params.selected_grouping);
+    if(req.params.selected_template = "weather"){
+        selectionquery = "SELECT name FROM Types ";
+        heading = req.params.selected_grouping.replace('_',' ');     
+   };
+  
+       db.all(selectionquery,(err, rows) =>{
+                selection_table = '';
+           let i;
+           for (i=0;i< rows.length;i++){
+               selection_table = selection_table + ' <option value=' + rows[i].name + '>';
+               selection_table = selection_table  + rows[i].name.replace('"','').replace('"','') + '</option>';
+           }
+           let response = template.replace('%%SelectionOptions%%',selection_table);
+           response = response.replace('%%heading%%',heading);
+           response = response.replace('%%next%%',nextbutton);
+           response = response.replace('%%previous%%',prevbutton);
+           res.status(200).type('html').send(response); 
+       });    
+});
+
 });
 
 
