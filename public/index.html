@@ -9,10 +9,10 @@
     <script type="text/javascript">
 		function ifelsefunction() { 
 		
-            let url = "/" + document.getElementById("selpage").value
+            let url = "/" + document.getElementById("selpage").value;
             window.open(url,"_self");
             
-		} 
+		} ;
 		</script>
 </head>
 <body>
@@ -42,7 +42,9 @@
             <!-- main content within a `grid-container` -->
             
             <div class="cell large-8" style="background-color: #e7e9e9;">
-                <center><h1>Minnesota Weather!</h1><img src="/public/images/mndock.jpg" alt="Dock in Minnesota"></center>
+                <center><h1>Minnesota Weather!</h1>
+                    <img src="images/mndock.jpg" alt="Dock in Minnesota">
+                </center>
             </div>
             
             <div class="grid-container">
@@ -74,8 +76,8 @@
     </div>
 
     <!-- include before closing <body> tag -->
-    <script src="/public/js/vendor.js"></script>
-    <script src="/public/js/foundation.js"></script>
+    <script src="js/vendor.js"></script>
+    <script src="js/foundation.js"></script>
     <script type="application/javascript">
         $(document).foundation();
     </script>
