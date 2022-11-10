@@ -43,22 +43,34 @@ let selectionquery = "";
 let heading = "";
 let nextbutton = "";
 let prevbutton = "";
-app.get('/:selected_template/', (req, res) => {
+//group for grouping example years, county, type of weather system, feel free to change the selection query we can figure out what works best
+app.get('/:selected_template', (req, res) => {
     console.log(req.params.selected_template);
+    console.log(req.query);
     fs.readFile(path.join(template_dir,req.params.selected_template +'.html'), 'utf-8', (err, template) => {
         // modify `template` and send response
         // this will require a query to the SQL database
-        
+        selectionquery = "SUM(deaths_direct) AS deaths_direct , SUM(deaths_indirect) AS deaths_indirect\
+        ,SUM(damage_property ) AS damage_property,SUM(damage_crops) AS damage_crops, SUM(injuries_direct) AS injuries_direct\
+        , SUM(injuries_indirect) as injuries_indirect FROM Users LEFT JOIN Types ON Users.type = Types.id ";
         
    
         if(req.params.selected_template = "weather"){
-             selectionquery = "SELECT name,SUM(deaths_direct) AS deaths_direct , SUM(deaths_indirect) AS deaths_indirect\
-             ,SUM(damage_property ) AS damage_property,SUM(damage_crops) AS damage_crops, SUM(injuries_direct) AS injuries_direct\
-             , SUM(injuries_indirect) as injuries_indirect FROM Users LEFT JOIN Types ON Users.type = Types.id GROUP BY name";
+             let doublequotes = '"';
+             let singlequotes = "'";
+             selectionquery = "SELECT name," + selectionquery 
+             
+             if(req.query.hasOwnProperty('group')){
+                heading = req.query.group.toUpperCase().replace('_','  ');
+                selectionquery = selectionquery  + 'WHERE name ='+ singlequotes+' '+ doublequotes + req.query.group.replace('_',' ')+ doublequotes+ singlequotes;
 
-             heading = "Types of Weather Systems";
+             }else{
+                heading = "Types of Weather Systems";
+             };
              nextbutton = "/weather/hail/"
              prevbutton = "/weather/tornado/"
+             selectionquery = selectionquery + " GROUP By name";
+             console.log(selectionquery);
              
              
         }
@@ -94,48 +106,8 @@ app.get('/:selected_template/', (req, res) => {
             });    
     });
 });
-heading = '';
-response = '';
-summaryquery = '';
 
-//get request for a specific grouping
-app.get('/:selected_template/:selected_grouping/', (req, res) => {
-    fs.readFile(path.join(template_dir,req.params.selected_template +'.html'), 'utf-8', (err, template) => {
 
-    if(req.params.selected_template = "weather"){
-        selectionquery = "SELECT name FROM Types";
-        summaryquery = "SELECT cz_name,name,SUM(deaths_direct) AS deaths_direct , SUM(deaths_indirect) AS deaths_indirect\
-             ,SUM(damage_property ) AS damage_property,SUM(damage_crops) AS damage_crops, SUM(injuries_direct) AS injuries_direct\
-             , SUM(injuries_indirect) as injuries_indirect,  strftime('%Y',date_time) as Year, strftime('%M', date_time)\
-              FROM Users LEFT JOIN Types ON Users.type = Types.id GROUP BY name,strftime('%Y',date_time),strftime('%M', date_time)\
-              , cz_name ";
-        tablequery= '';
-        heading = req.params.selected_grouping.replace('_',' ');
-        nextbutton = "/weather/";
-        prevbutton = "/weather/";
-          
-   };
-  
-       db.all(selectionquery,(err, rows) =>{
-            selection_table = '';
-            summary_table = '';
-           let i;
-           for (i=0;i< rows.length;i++){
-                selection_table = selection_table + ' <option value=' + rows[i].name + '>';
-                selection_table = selection_table  + rows[i].name.replace('"','').replace('"','') + '</option>';
-        };
-           
-           
-           let response = template.replace('%%SelectionOptions%%',selection_table);
-           response = response.replace('%%Weather_table%%',summary_table);
-           response = response.replace('%%heading%%',heading);
-           response = response.replace('%%next%%',nextbutton);
-           response = response.replace('%%previous%%',prevbutton);
-           res.status(200).type('html').send(response); 
-       });    
-});
-
-});
 
 
 app.listen(port, () => {
