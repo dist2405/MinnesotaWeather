@@ -9,7 +9,7 @@
     <script type="text/javascript">
 		function ifelsefunction() { 
 		
-            let url = "/weather/" + document.getElementById("selpage").value.replace(' ','_') +'/';
+            let url = "/weather?group=" + document.getElementById("selpage").value.replace(' ','_');
             window.open(url,"_self");
             
 		} ;
