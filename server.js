@@ -129,10 +129,16 @@ app.get('/:selected_template', (req, res) => {
                 let i;
                 summary_table = '';
                 selection_table = '';
+                const duplicates = [];
+
                
                 for (i=0;i< rows.length;i++){
-                    selection_table = selection_table + ' <option value=' + rows[i].name + '>';
-                    selection_table = selection_table  + rows[i].name.replace('"','').replace('"','') + '</option>';
+                    
+                    if(duplicates.includes(rows[i].name) == false){
+                        selection_table = selection_table + ' <option value=' + rows[i].name + '>';
+                        selection_table = selection_table  + rows[i].name.replace('"','').replace('"','') + '</option>';
+                        duplicates.push(rows[i].name);
+                    };
                     summary_table = summary_table + '<tr><td>' + rows[i].name.replace('"','').replace('"','') + '</td>';
                     summary_table = summary_table + '<td>' + rows[i].Year+ '</td>';
                     summary_table = summary_table + '<td>' + rows[i].StormsPerYear+ '</td>';
@@ -148,13 +154,13 @@ app.get('/:selected_template', (req, res) => {
                
               
                 let response = template.replace('%%heading%%',heading);
-                if(!req.params.selected_template == 'weather'){
+                
                     response = response.replace('%%SelectionOptions%%',selection_table);
-                };
-                response = response.replace('%%Weather_table%%',summary_table);
-                response = response.replace('%%next%%',nextbutton);
-                response = response.replace('%%previous%%',prevbutton);
-                res.status(200).type('html').send(response); 
+            
+                    response = response.replace('%%Weather_table%%',summary_table);
+                    response = response.replace('%%next%%',nextbutton);
+                    response = response.replace('%%previous%%',prevbutton);
+                    res.status(200).type('html').send(response); 
             });    
     });
 });
