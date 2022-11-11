@@ -54,12 +54,12 @@ app.get('/:selected_template', (req, res) => {
         ,SUM(damage_property ) AS damage_property,SUM(damage_crops) AS damage_crops, SUM(injuries_direct) AS injuries_direct\
         , SUM(injuries_indirect) as injuries_indirect FROM Users LEFT JOIN Types ON Users.type = Types.id ";
         
-   
+        //setting up weather page
         if(req.params.selected_template = "weather"){
              let doublequotes = '"';
              let singlequotes = "'";
              selectionquery = "SELECT name," + selectionquery 
-             
+             //looking for grouping
              if(req.query.hasOwnProperty('group')){
                 heading = req.query.group.toUpperCase().replace('_','  ');
                 selectionquery = selectionquery  + 'WHERE name ='+ singlequotes+' '+ doublequotes + req.query.group.replace('_',' ')+ doublequotes+ singlequotes;
@@ -67,8 +67,18 @@ app.get('/:selected_template', (req, res) => {
              }else{
                 heading = "Types of Weather Systems";
              };
-             nextbutton = "/weather/hail/"
-             prevbutton = "/weather/tornado/"
+             if(req.query.group = 'Hail'){
+                prevbutton = '/weather?group=Tornado';
+                nextbutton = '/weather?group=Thunderstorm_Wind';
+            }else if (req.query.group = 'Tornado'){
+                prevbutton = '/weather?group=Thunderstorm_Wind';
+                nextbutton = '/weather?group=Hail';
+            }else{
+                prevbutton = '/weather?group=Tornado';
+                nextbutton = '/weather?group=Hail';
+                
+            };
+             
              selectionquery = selectionquery + " GROUP By name";
              console.log(selectionquery);
              
@@ -84,6 +94,7 @@ app.get('/:selected_template', (req, res) => {
                 let i;
                 summary_table = '';
                 selection_table = '';
+               
                 for (i=0;i< rows.length;i++){
                     selection_table = selection_table + ' <option value=' + rows[i].name + '>';
                     selection_table = selection_table  + rows[i].name.replace('"','').replace('"','') + '</option>';
@@ -94,7 +105,9 @@ app.get('/:selected_template', (req, res) => {
                     summary_table = summary_table + '<td>' + rows[i].damage_crops + '</td>';
                     summary_table = summary_table + '<td>' + rows[i].injuries_direct + '</td>';
                     summary_table = summary_table + '<td>' + rows[i].injuries_indirect + '</td></tr>';
-                }
+                   };
+               
+
                
               
                 let response = template.replace('%%SelectionOptions%%',selection_table);
@@ -106,6 +119,7 @@ app.get('/:selected_template', (req, res) => {
             });    
     });
 });
+
 
 
 
