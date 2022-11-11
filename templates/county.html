@@ -4,12 +4,13 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Minnesota Weather!</title>
-	<link rel="stylesheet" href="/public/css/foundation.css">
+	<link rel="stylesheet" href="/css/foundation.css">
+    <link rel="stylesheet" href="/css/weatherdata.css">
 
     <script type="text/javascript">
 		function ifelsefunction() { 
 		
-            let url = "/county/" + document.getElementById("selpage").value
+            let url = "/county?group=" + document.getElementById("selpage").value + "_CO."
             window.open(url,"_self");
             
 		} 
@@ -17,76 +18,92 @@
 </head>
 <body>
 
-    <div class="off-canvas-wrapper ">
-        <!-- Your menu or Off-canvas content goes here -->
-        <div class="off-canvas position-left hide-for-small-only" id="offCanvas" data-off-canvas>
-            <!-- Close button -->
-            <button class="close-button" aria-label="Close menu" type="button" data-close>
-                <span aria-hidden="true">&times;</span>
-            </button>
-
-            <!-- Menu -->
-            <ul class="vertical menu" style="background-color:rgb(193, 219, 219)" font="color:white">
-                <li><a href="/">Home</a></li>
-				<li><a href="/county/">County</a></li>
-				<li><a href="/weather/">Weather</a></li>
-				<li><a href="/year/">Year</a></li>
-            </ul>
-           
-        </div>
-        <div class="grid-x grid-padding-x">
-            <button type="button" class="cell large-auto button hide-for-small-only" style="background-color:rgb(65, 122, 122)" data-toggle="offCanvas">More Weather Choices!</button>
-        </div>
-        <!-- Your page content lives here -->
-        <div class="off-canvas-content" data-off-canvas-content>
-            <!-- main content within a `grid-container` -->
-            <div class="grid-container">
-                <!-- `grid-x` represents a row -->
- 
-                    <div class="ifelsediv">
-                    <label>Select A Grouping: </label>
-                    <select id="selpage">
-         
-                    <!--<option value="county">County</option> -->
-                    %%SelectionOptions%%
-
+    <section id="margin" class="container">
+        <section id="top-navigation" class="container">
+            <div class="title-bar" data-responsive-toggle="responsive-menu" data-hide-for="medium">
+                <button class="menu-icon" type="button" data-toggle="responsive-menu"></button>
+                <div class="title-bar-title">Menu</div>
+              </div>
+              
+              <div class="top-bar" id="responsive-menu" style="background-color: #0E1013">
+                <div class="top-bar-left">
+                    <ul style="font-size: medium; float: left;"class="dropdown menu" data-dropdown-menu>
+                        <li><a href="/" style = "font-weight: bolder;">Minnesota Weather Data</a></li>
+                      </ul>
                     
-                     
-                     </select>
-                <button onclick="ifelsefunction()">Apply selected option</button>
+                  <ul style="font-size: medium; float: right;"class="dropdown menu" data-dropdown-menu>
+                    <li><a href="/county/">County</a></li>
+                    <li><a href="/year/">Year</a></li>
+                    <li><a href="/weather/">Weather Type</a></li>
+                  </ul>
                 </div>
-                <div class="grid-x grid-padding-x">
-                    <div class="cell large-18" style="background-color: #e7e9e9;">
-                        <center><a href="%%previous%%" class="previous">&laquo; Previous</a>
-                        <a href="%%next%%" class="next">Next &raquo;</a></center>
-                        
-                    </div>
-                  
-                    
+              </div>
+
+        </section>
+        <div class="grid-container">
+            <!-- `grid-x` represents a row -->
+            <h1>%%heading%%</h1>
+                <div class="ifelsediv">
+                <label>Select A Grouping: </label>
+                <select id="selpage">
+     
+                     <!--<option value="county">County</option> -->
+
+                    %%SelectionOptions%%
+                     
+             
+
+                
+                 
+                 </select>
+            <button onclick="ifelsefunction()">Apply selected option</button>
+            <div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="weather_table">County</th>
+                            <th>Deaths Direct</th>
+                            <th>Deaths Indirect</th>
+                            <th>Damage Property</th>
+                            <th>Damage Crops</th>
+                            <th>Injuries Direct</th>
+                            <th>Injuries Indirect</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        %%Weather_table%%
+                    </tbody>
+                </table>
             </div>
+            </div>
+            <div class="grid-x grid-padding-x">
+                <div class="cell large-18" style="background-color: #e7e9e9;">
+                    <center><a href="%%previous%%" class="previous">&laquo; Previous</a>
+                    <a href="%%next%%" class="next">Next &raquo;</a></center>
+                    
+                </div>
+              
+                
         </div>
-    </div>
+        <br>
+        <p style="text-align: center;">graph</p>
+        <br>
+        
+        <p style="text-align: center;">add info about counties</p>
+        <br>
+
 
     <!-- include before closing <body> tag -->
-    <script src="/public/js/vendor.js"></script>
-    <script src="/public/js/foundation.js"></script>
+    <script src="/js/vendor.js"></script>
+    <script src="/js/foundation.js"></script>
     <script type="application/javascript">
         $(document).foundation();
     </script>
 </body>
-<footer class ="hide-for-medium" >
-    <div class="grid-x grid-padding-x">
-        <div class="cell hide-for-medium" style="background-color:rgb(179, 201, 201)" >
-            <h3>More Weather Choices</h3></div>
-        <div class="cell hide-for-medium" style="background-color:rgb(179, 201, 201)">
-            <a href="/">Home</a></div>  
-        <div class="cell hide-for-medium" style="background-color:rgb(179, 201, 201)">
-            <a href="/year/" >Year</a></div> 
-        <div class="cell hide-for-medium" style="background-color:rgb(179, 201, 201)">
-                <a href="/weather/">Weather</a></div> 
-        <div class="cell hide-for-medium" style="background-color:rgb(179, 201, 201)">
-            <a href="/county/">County</a></div>  
-                
-    </div>   
-</footer>    
+
+<footer class="footer">
+    <div class="container copyright" style="background-color: #17181B">
+    <a target="_blank" href="https://www.ncdc.noaa.gov/stormevents/">Orginal Database</a></li> 
+    </div>
+  </footer>
 </html>

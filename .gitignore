@@ -1,0 +1,2 @@
+#this is so we don't publish the node mods to the repository
+node_modules

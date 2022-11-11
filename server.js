@@ -54,8 +54,12 @@ app.get('/:selected_template', (req, res) => {
         ,SUM(damage_property ) AS damage_property,SUM(damage_crops) AS damage_crops, SUM(injuries_direct) AS injuries_direct\
         , SUM(injuries_indirect) as injuries_indirect FROM Users LEFT JOIN Types ON Users.type = Types.id ";
         
+
+
+
+        // I think we are doing this wrong bc we should query all the data and filter out what we need not select by rows 
         //setting up weather page
-        if(req.params.selected_template = "weather"){
+        if(req.params.selected_template == "weather"){
              let doublequotes = '"';
              let singlequotes = "'";
              selectionquery = "SELECT name," + selectionquery 
@@ -84,13 +88,44 @@ app.get('/:selected_template', (req, res) => {
              
              
         }
-        else if(req.params.selected_template = "year"){
-            selectionquery = "";
+        else if(req.params.selected_template == "year"){
+            selectionquery = "cz_name as name, deaths_direct, deaths_indirect, damage_property, damage_crops, injuries_direct, injuries_indirect FROM Users ";
+            let doublequotes = '"';
+            let singlequotes = "'";
+            selectionquery = "SELECT " + selectionquery 
+            //looking for grouping
+            if(req.query.hasOwnProperty('group')){
+               heading = req.query.group.toUpperCase().replace('_','  ');
+               selectionquery = selectionquery  + 'WHERE name ='+ singlequotes+' '+ doublequotes + req.query.group.replace('_',' ')+ doublequotes+ singlequotes;
+
+            }else{
+               heading = "County";
+            };
+            
+            
+            selectionquery = selectionquery + " GROUP By cz_name";
+            console.log(selectionquery); //<--- all this stuff is a place holder so the website will not crash 
         }
-        else if(req.params.selected_template = "county"){
-            selectionquery = "";
+        else if(req.params.selected_template == "county"){
+        selectionquery = "cz_name as name, deaths_direct, deaths_indirect, damage_property, damage_crops, injuries_direct, injuries_indirect FROM Users ";
+            let doublequotes = '"';
+            let singlequotes = "'";
+            selectionquery = "SELECT " + selectionquery 
+            //looking for grouping
+            if(req.query.hasOwnProperty('group')){
+               heading = req.query.group.toUpperCase().replace('_','  ');
+               selectionquery = selectionquery  + 'WHERE name ='+ singlequotes+' '+ doublequotes + req.query.group.replace('_',' ')+ doublequotes+ singlequotes;
+
+            }else{
+               heading = "County";
+            };
+            
+            
+            selectionquery = selectionquery + " GROUP By cz_name";
+            console.log(selectionquery);
         };
             db.all(selectionquery,(err, rows)=>{
+                console.log(err);
                 let i;
                 summary_table = '';
                 selection_table = '';
