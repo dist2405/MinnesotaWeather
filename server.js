@@ -50,7 +50,7 @@ app.get('/:selected_template', (req, res) => {
     fs.readFile(path.join(template_dir,req.params.selected_template +'.html'), 'utf-8', (err, template) => {
         // modify `template` and send response
         // this will require a query to the SQL database
-        selectionquery = "SUM(deaths_direct) AS deaths_direct , SUM(deaths_indirect) AS deaths_indirect\
+        selectionquery = "COUNT(date_time) as StormsPerYear,SUM(deaths_direct) AS deaths_direct , SUM(deaths_indirect) AS deaths_indirect\
         ,SUM(damage_property ) AS damage_property,SUM(damage_crops) AS damage_crops, SUM(injuries_direct) AS injuries_direct\
         , SUM(injuries_indirect) as injuries_indirect FROM Users LEFT JOIN Types ON Users.type = Types.id ";
         
@@ -62,7 +62,7 @@ app.get('/:selected_template', (req, res) => {
         if(req.params.selected_template == "weather"){
              let doublequotes = '"';
              let singlequotes = "'";
-             selectionquery = "SELECT name," + selectionquery 
+             selectionquery = "SELECT name,strftime('%Y',date_time) as Year," + selectionquery 
              //looking for grouping
              if(req.query.hasOwnProperty('group')){
                 heading = req.query.group.toUpperCase().replace('_','  ');
@@ -83,7 +83,7 @@ app.get('/:selected_template', (req, res) => {
                 
             };
              
-             selectionquery = selectionquery + " GROUP By name";
+             selectionquery = selectionquery + " GROUP By strftime('%Y',date_time),name";
              console.log(selectionquery);
              
              
@@ -134,6 +134,8 @@ app.get('/:selected_template', (req, res) => {
                     selection_table = selection_table + ' <option value=' + rows[i].name + '>';
                     selection_table = selection_table  + rows[i].name.replace('"','').replace('"','') + '</option>';
                     summary_table = summary_table + '<tr><td>' + rows[i].name.replace('"','').replace('"','') + '</td>';
+                    summary_table = summary_table + '<td>' + rows[i].Year+ '</td>';
+                    summary_table = summary_table + '<td>' + rows[i].StormsPerYear+ '</td>';
                     summary_table = summary_table + '<td>' + rows[i].deaths_direct + '</td>';
                     summary_table = summary_table + '<td>' + rows[i].deaths_indirect + '</td>';
                     summary_table = summary_table + '<td>' + rows[i].damage_property + '</td>';
@@ -145,8 +147,10 @@ app.get('/:selected_template', (req, res) => {
 
                
               
-                let response = template.replace('%%SelectionOptions%%',selection_table);
-                response = response.replace('%%heading%%',heading);
+                let response = template.replace('%%heading%%',heading);
+                if(!req.params.selected_template == 'weather'){
+                    response = response.replace('%%SelectionOptions%%',selection_table);
+                };
                 response = response.replace('%%Weather_table%%',summary_table);
                 response = response.replace('%%next%%',nextbutton);
                 response = response.replace('%%previous%%',prevbutton);
