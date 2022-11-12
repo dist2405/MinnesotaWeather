@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Minnesota Weather!</title>
+	<link rel="stylesheet" href="/css/foundation.css">
+    <link rel="stylesheet" href="/css/weatherdata.css">
+
+    <script type="text/javascript">
+		function ifelsefunction() { 
+            let url = "/" + document.getElementById("selpage").value
+            window.open(url,"_self");
+		} 
+		</script>
+
+</head>
+<body>
+    <section id="margin" class="container">
+        <section id="top-navigation" class="container">
+            <div class="title-bar" data-responsive-toggle="responsive-menu" data-hide-for="medium">
+                <button class="menu-icon" type="button" data-toggle="responsive-menu"></button>
+                <div class="title-bar-title">Menu</div>
+              </div>
+              
+              <div class="top-bar" id="responsive-menu" style="background-color: #0E1013">
+                <div class="top-bar-left">
+                    <ul style="font-size: medium; float: left;"class="dropdown menu" data-dropdown-menu>
+                        <li><a href="/" style = "font-weight: bolder;">Minnesota Weather Data</a></li>
+                      </ul>
+                    
+                  <ul style="font-size: medium; float: right;"class="dropdown menu" data-dropdown-menu>
+                    <li><a href="/county/">County</a></li>
+                    <li><a href="/year/">Year</a></li>
+                    <li><a href="/weather/">Weather Type</a></li>
+                  </ul>
+                </div>
+              </div>
+
+        </section>
+
+        <div class="cell large-8">
+          
+            <center><img src="images/1965newspaper.jpeg" alt="1965 Newpaper" width="500" height="600"></center>
+        </div>
+        <br>
+        <p style="text-align: center;">add info about the weather database over all where we got info etc</p>
+        <br>
+
+
+    <!-- include before closing <body> tag -->
+    <script src="/js/vendor.js"></script>
+    <script src="/js/foundation.js"></script>
+    <script type="application/javascript">
+        $(document).foundation();
+    </script>
+</body>
+
+<footer class="footer">
+    <div class="container copyright" style="background-color: #17181B">
+    <a target="_blank" href="https://www.ncdc.noaa.gov/stormevents/">Original Database</a></li> 
+    </div>
+  </footer>
+                   
+</html>
