@@ -6,6 +6,9 @@ let path = require('path');
 let express = require('express');
 let sqlite3 = require('sqlite3');
 
+function toPascal(string) {
+    return string.charAt(0).toUpperCase() + string.substring(1).toLowerCase();
+}
 
 let public_dir = path.join(__dirname, 'public');
 let template_dir = path.join(__dirname, 'templates');
@@ -27,147 +30,176 @@ let db = new sqlite3.Database(db_filename, sqlite3.OPEN_READONLY, (err) => {
 // Serve static files from 'public' directory
 app.use(express.static(public_dir));
 
-
 // GET request handler for home page '/' (redirect to desired route)
 app.get('/', (req, res) => {
     let home = 'index.html'; // <-- change this
     res.redirect(home);
 });
 
-
 // Example GET request handler for data about a specific template
 app.get('/favicon.ico', (req, res) => res.status(204));
-let selection_table = "";
-let summary_table = '';
-let selectionquery = "";
-let heading = "";
-let nextbutton = "";
-let prevbutton = "";
+
 //group for grouping example years, county, type of weather system, feel free to change the selection query we can figure out what works best
 app.get('/:selected_template', (req, res) => {
-    console.log(req.params.selected_template);
-    console.log(req.query);
-    fs.readFile(path.join(template_dir,req.params.selected_template +'.html'), 'utf-8', (err, template) => {
+    fs.readFile(path.join(template_dir, req.params.selected_template + '.html'), 'utf-8', (err, template) => {
+        if (err) {
+            console.log(err);
+            res.status(404).type('json').send({ error: 404, message: `There's no data for ${req.params.selected_template} route you silly goose.` });
+            return;
+        }
         // modify `template` and send response
         // this will require a query to the SQL database
-        selectionquery = "COUNT(date_time) as StormsPerYear,SUM(deaths_direct) AS deaths_direct , SUM(deaths_indirect) AS deaths_indirect\
-        ,SUM(damage_property ) AS damage_property,SUM(damage_crops) AS damage_crops, SUM(injuries_direct) AS injuries_direct\
-        , SUM(injuries_indirect) as injuries_indirect FROM Users LEFT JOIN Types ON Users.type = Types.id ";
-        
+        let query = '';
+        let heading = '';
+        let selections = '';
+        let nextbutton = '';
+        let prevbutton = '';
 
-
-
-        // I think we are doing this wrong bc we should query all the data and filter out what we need not select by rows 
-        //setting up weather page
-        if(req.params.selected_template == "weather"){
-             let doublequotes = '"';
-             let singlequotes = "'";
-             selectionquery = "SELECT name,strftime('%Y',date_time) as Year," + selectionquery 
-             //looking for grouping
-             if(req.query.hasOwnProperty('group')){
-                heading = req.query.group.toUpperCase().replace('_','  ');
-                selectionquery = selectionquery  + 'WHERE name ='+ singlequotes+' '+ doublequotes + req.query.group.replace('_',' ')+ doublequotes+ singlequotes;
-
-             }else{
-                heading = "Types of Weather Systems";
-             };
-             if(req.query.group = 'Hail'){
-                prevbutton = '/weather?group=Tornado';
-                nextbutton = '/weather?group=Thunderstorm_Wind';
-            }else if (req.query.group = 'Tornado'){
-                prevbutton = '/weather?group=Thunderstorm_Wind';
-                nextbutton = '/weather?group=Hail';
-            }else{
-                prevbutton = '/weather?group=Tornado';
-                nextbutton = '/weather?group=Hail';
-                
-            };
-             
-             selectionquery = selectionquery + " GROUP By strftime('%Y',date_time),name";
-             console.log(selectionquery);
-             
-             
+        switch (req.params.selected_template) {
+            case 'weather':
+                query = 'SELECT name as weather, strftime(\'%Y\', date_time) as year, deaths_direct as direct_deaths, deaths_indirect as indirect_deaths, damage_property as property_damage, damage_crops as crops_damaged, injuries_direct as direct_injuries, injuries_indirect as indirect_injuries FROM Users, Types';
+                if(req.query['group']) {
+                    heading = req.query.group.toUpperCase().replace('_','  ');
+                } else {
+                    heading = "Types of Weather Systems";
+                }
+                // query = query + " GROUP By strftime('%Y',date_time),weather";
+                break;
+            case 'year':
+                query = 'SELECT strftime(\'%Y\', date_time) as year, Types.name as type, deaths_direct as direct_deaths, deaths_indirect as indirect_deaths, damage_property as property_damage, damage_crops as crops_damaged, injuries_direct as direct_injuries, injuries_indirect as indirect_injuries FROM Users, Types';
+                if (req.query['group']) {
+                    heading = req.query.group.toUpperCase().replace('_', '  ');
+                } else {
+                    heading = 'Year';
+                }
+                break;
+            case 'county':
+                query = 'SELECT replace(cz_name, \' CO.\', \'\') as county, Types.name as type, strftime(\'%Y\',date_time) as year, deaths_direct as direct_deaths, deaths_indirect as indirect_deaths, damage_property as property_damage, damage_crops as crops_damage, injuries_direct as direct_injuries, injuries_indirect as indirect_injuries FROM Users, Types';
+                if (req.query['group']) {
+                    heading = req.query.group.toUpperCase().replace('_', '  ');
+                } else {
+                    heading = 'County';
+                }
+                break;
         }
-        else if(req.params.selected_template == "year"){
-            selectionquery = "cz_name as name, deaths_direct, deaths_indirect, damage_property, damage_crops, injuries_direct, injuries_indirect FROM Users ";
-            let doublequotes = '"';
-            let singlequotes = "'";
-            selectionquery = "SELECT " + selectionquery 
-            //looking for grouping
-            if(req.query.hasOwnProperty('group')){
-               heading = req.query.group.toUpperCase().replace('_','  ');
-               selectionquery = selectionquery  + 'WHERE name ='+ singlequotes+' '+ doublequotes + req.query.group.replace('_',' ')+ doublequotes+ singlequotes;
 
-            }else{
-               heading = "County";
-            };
-            
-            
-            selectionquery = selectionquery + " GROUP By cz_name";
-            console.log(selectionquery); //<--- all this stuff is a place holder so the website will not crash 
-        }
-        else if(req.params.selected_template == "county"){
-        selectionquery = "cz_name as name, deaths_direct, deaths_indirect, damage_property, damage_crops, injuries_direct, injuries_indirect FROM Users ";
-            let doublequotes = '"';
-            let singlequotes = "'";
-            selectionquery = "SELECT " + selectionquery 
-            //looking for grouping
-            if(req.query.hasOwnProperty('group')){
-               heading = req.query.group.toUpperCase().replace('_','  ');
-               selectionquery = selectionquery  + 'WHERE name ='+ singlequotes+' '+ doublequotes + req.query.group.replace('_',' ')+ doublequotes+ singlequotes;
-
-            }else{
-               heading = "County";
-            };
-            
-            
-            selectionquery = selectionquery + " GROUP By cz_name";
-            console.log(selectionquery);
-        };
-            db.all(selectionquery,(err, rows)=>{
+        db.all(query, (err, rows) => {
+            if (err || rows.length == 0) {
                 console.log(err);
-                let i;
-                summary_table = '';
-                selection_table = '';
-                const duplicates = [];
+                res.status(404).type('json').send({ error: 404, message: `There's no data for ${req.params.selected_template} you silly goose.` });
+                return;
+            }
 
-               
-                for (i=0;i< rows.length;i++){
-                    
-                    if(duplicates.includes(rows[i].name) == false){
-                        selection_table = selection_table + ' <option value=' + rows[i].name + '>';
-                        selection_table = selection_table  + rows[i].name.replace('"','').replace('"','') + '</option>';
-                        duplicates.push(rows[i].name);
-                    };
-                    summary_table = summary_table + '<tr><td>' + rows[i].name.replace('"','').replace('"','') + '</td>';
-                    summary_table = summary_table + '<td>' + rows[i].Year+ '</td>';
-                    summary_table = summary_table + '<td>' + rows[i].StormsPerYear+ '</td>';
-                    summary_table = summary_table + '<td>' + rows[i].deaths_direct + '</td>';
-                    summary_table = summary_table + '<td>' + rows[i].deaths_indirect + '</td>';
-                    summary_table = summary_table + '<td>' + rows[i].damage_property + '</td>';
-                    summary_table = summary_table + '<td>' + rows[i].damage_crops + '</td>';
-                    summary_table = summary_table + '<td>' + rows[i].injuries_direct + '</td>';
-                    summary_table = summary_table + '<td>' + rows[i].injuries_indirect + '</td></tr>';
-                   };
-               
+            let table_head = '';
+            let table_body = '';
 
-               
-              
-                let response = template.replace('%%heading%%',heading);
-                
-                    response = response.replace('%%SelectionOptions%%',selection_table);
-            
-                    response = response.replace('%%Weather_table%%',summary_table);
-                    response = response.replace('%%next%%',nextbutton);
-                    response = response.replace('%%previous%%',prevbutton);
-                    res.status(200).type('html').send(response); 
-            });    
+            if (req.query['group']) {
+                let value = req.query.group.split('_').map(toPascal).join(' ').toUpperCase().trim();
+                heading = value;
+            } else {
+                heading = toPascal(req.params.selected_template);
+            }
+
+            const selection = [];
+
+            // create array of choices
+            for (const row of rows) {
+                if (row[req.params.selected_template]) {
+                    var value = row[req.params.selected_template].replace('"', '').replace('"', '').split(' ').map(toPascal).join(' ').trim();
+                    if (!selection.includes(value)) selection.push(value);
+                }
+            }
+
+            selection.sort();
+
+            // setup table headers
+            for (const property in rows[0]) {
+                table_head += '<th';
+                if (property == req.params.selected_template) table_head += ' class="name"';
+                table_head += `>${property.split('_').map(toPascal).join(' ').trim()}</th>`;
+            }
+
+            // setup next/previous buttons
+            if (!(req.query['group'])) {
+                prevbutton = `/${req.params.selected_template}?group=${selection[selection.length - 1]}`;
+                nextbutton = `/${req.params.selected_template}?group=${selection[0]}`;
+            } else {
+                let row = selection.indexOf(heading.split(' ').map(toPascal).join(' ').replace('"', '').replace('"', '').trim());
+
+                if (row == 0) {
+                    prevbutton = `/${req.params.selected_template}?group=${selection[selection.length - 1]}`;
+                    nextbutton = `/${req.params.selected_template}?group=${selection[1]}`;
+                } else if (row == selection.length - 1) {
+                    prevbutton = `/${req.params.selected_template}?group=${selection[row - 1]}`;
+                    nextbutton = `/${req.params.selected_template}?group=${selection[0]}`;
+                } else {
+                    prevbutton = `/${req.params.selected_template}?group=${selection[row - 1]}`;
+                    nextbutton = `/${req.params.selected_template}?group=${selection[row + 1]}`;
+                }
+            }
+
+            if (req.query['group']) {
+                if (req.params.selected_template == 'weather') {
+                    rows = rows.filter(r => r[req.params.selected_template] == ` "${req.query.group.split('_').join(' ')}"`);
+                } else {
+                    rows = rows.filter(r => r[req.params.selected_template] == req.query.group.split('_').join(' ').toUpperCase());
+                }
+
+                if (rows.length == 0) {
+                    // the filtered we applied resulted in no rows, so we should send 404
+                    res.status(404).type('json').send({ error: 404, message: `There's no data for ${req.params.selected_template} ${req.query['group']} you silly goose.` });
+                    return;
+                }
+            }
+
+            // iterate over rows
+            for (const row of rows) {
+                // start a row
+                table_body += '<tr>';
+                // iterate over the properties of the row object
+                for (const property in row) {
+                    var value = typeof row[property] == 'string' ? row[property].replace('"', '').replace('"', '').split(' ').map(toPascal).join(' ').trim() : row[property];
+                    table_body += `<td>${value}</td>`;
+                }
+                //end our row
+                table_body += '</tr>';
+            }
+
+            // setup choice/grouping dropdown
+            let select = false;
+
+            for (let i = 0; i < selection.length; i++) {
+                selections += `<option value="${selection[i].replace('"', '').replace('"', '').split(' ').map(toPascal).join(' ').trim()}" `
+                if (selection[i].toUpperCase() == heading) {
+                    select = true;
+                    selections += "selected"
+                }
+                selections += `>${selection[i].replace('"', '').replace('"', '').split(' ').map(toPascal).join(' ').trim()}</option>`;
+            }
+
+            if (!select) {
+                selections = `"<option value="All" selected>All</option>` + selections;
+            } else {
+                selections = `"<option value="All">All</option>` + selections;
+            }
+
+            // bake our data into response and send it
+            const response = template.replace('%%heading%%', heading)
+                .replace('%%Choices%%', selections)
+                .replace('%%next%%', nextbutton)
+                .replace('%%previous%%', prevbutton)
+                .replace('%%table_head%%', table_head)
+                .replace('%%table_body%%', table_body);
+
+            res.status(200).type('html').send(response);
+        });
     });
 });
 
-
-
-
+// catch all routes that are not the ones we specified above
+app.get('*', function (req, res) {
+    res.status(404).type('json').send({ error: 404, message: `There was nothing found at ${req.url} you silly goose.`});
+});
 
 app.listen(port, () => {
     console.log('Now listening on port ' + port);

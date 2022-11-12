@@ -1,19 +1,40 @@
-body {
-    background-color: #17181B;
-}
+body { background-color: #17181B;}
 
 .container {
-background-color: #202124;
-max-width: 880px;
-margin: 0 auto;
+    background-color: #202124;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
 label {
+    font-size: medium;
     color: white;
 }
 
-button{
+.button {
+    font-size: medium;
     color: white;
+    background-color: #0E1013;
+}
+
+.button:hover {
+    color: white;
+    background-color: #17181B;
+}
+
+.button:focus {
+    color: #0E1013;
+    background-color: #0E1013;
+}
+
+table { margin-bottom: 0rem; }
+
+h1 {
+    padding-top: 2rem;
+    font-size: 3rem;
+    font-weight: bold;
+    color: white;
+    text-align: center;
 }
 
 #margin {
@@ -21,17 +42,14 @@ margin-top:2rem;
 overflow: hidden;
 }
 
-p {
-color: white;
-
-}
+p { color: white; }
 
 li {
 color: white;
 background-color: #0E1013;
-
 }
 
 a { color: #80868B;}
 a:hover { color: #FFFFFF; }
+a:focus { color: #FFFFFF; }
 

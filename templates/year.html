@@ -1,21 +1,25 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Minnesota Weather!</title>
-	<link rel="stylesheet" href="/css/foundation.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minnesota Weather!</title>
+    <link rel="stylesheet" href="/css/foundation.css">
     <link rel="stylesheet" href="/css/weatherdata.css">
 
     <script type="text/javascript">
-		function ifelsefunction() { 
-		
-            let url = "/year/" + document.getElementById("selpage").value
-            window.open(url,"_self");
-            
-		} 
-		</script>
+        function ifelsefunction() {
+            var value = document.getElementById("selpage").value.split(' ').join("_");
+            let url = "/year";
+            if (value != "All") {
+                url += `?group=${value}`;
+            }
+            window.open(url, "_self");
+        } 
+    </script>
 </head>
+
 <body>
 
     <section id="margin" class="container">
@@ -23,29 +27,70 @@
             <div class="title-bar" data-responsive-toggle="responsive-menu" data-hide-for="medium">
                 <button class="menu-icon" type="button" data-toggle="responsive-menu"></button>
                 <div class="title-bar-title">Menu</div>
-              </div>
-              
-              <div class="top-bar" id="responsive-menu" style="background-color: #0E1013">
+            </div>
+
+            <div class="top-bar" id="responsive-menu" style="background-color: #0E1013">
                 <div class="top-bar-left">
-                    <ul style="font-size: medium; float: left;"class="dropdown menu" data-dropdown-menu>
-                        <li><a href="/" style = "font-weight: bolder;">Minnesota Weather Data</a></li>
-                      </ul>
-                    
-                  <ul style="font-size: medium; float: right;"class="dropdown menu" data-dropdown-menu>
-                    <li><a href="/county/">County</a></li>
-                    <li><a href="/year/">Year</a></li>
-                    <li><a href="/weather/">Weather Type</a></li>
-                  </ul>
+                    <ul style="font-size: medium; float: left;" class="dropdown menu" data-dropdown-menu>
+                        <li><a href="/" style="font-weight: bolder;">Minnesota Weather Data</a></li>
+                    </ul>
+
+                    <ul style="font-size: medium; float: right;" class="dropdown menu" data-dropdown-menu>
+                        <li><a href="/county/">County</a></li>
+                        <li><a href="/year/">Year</a></li>
+                        <li><a href="/weather/">Weather Type</a></li>
+                    </ul>
                 </div>
-              </div>
+            </div>
 
         </section>
-        <br>
-        <p style="text-align: center;">graph</p>
-        <br>
-        <p style="text-align: center;">add info about years</p>
-        <br>
+        <div class="grid-container">
+            <!-- `grid-x` represents a row -->
+            <h1>%%heading%%</h1>
+            <div class="ifelsediv">
+                <label>Select A Grouping: </label>
+                <select id="selpage">
 
+                    <!--<option value="county">County</option> -->
+                    %%Choices%%
+
+                </select>
+                <button class="button small expanded" onclick="ifelsefunction()">Apply selected option</button>
+
+                <canvas id="myChart" width="400" height="400"></canvas>
+
+                <div>
+                    <div class="cell large-18" style="background-color: #e7e9e9;">
+                        <center><a href="%%previous%%" class="previous">&laquo; Previous</a>
+                            <a href="%%next%%" class="next">Next &raquo;</a>
+                        </center>
+                    </div>
+                    <table class="hover" id="weather_table">
+                        <thead>
+                            <tr>
+                                %%table_head%%
+                            </tr>
+                        </thead>
+                        <tbody>
+                            %%table_body%%
+                        </tbody>
+                    </table>
+                </div>
+                <div class="cell large-18" style="background-color: #e7e9e9;">
+                    <center><a href="%%previous%%" class="previous">&laquo; Previous</a>
+                        <a href="%%next%%" class="next">Next &raquo;</a>
+                    </center>
+                </div>
+            </div>
+        </div>
+        <br>
+        <br>
+    </section>
+    <footer class="footer">
+        <div class="container copyright" style="background-color: #17181B">
+            <a target="_blank" href="https://www.ncdc.noaa.gov/stormevents/">Original Database</a></li>
+        </div>
+    </footer>
 
     <!-- include before closing <body> tag -->
     <script src="/js/vendor.js"></script>
@@ -53,11 +98,6 @@
     <script type="application/javascript">
         $(document).foundation();
     </script>
-</body>
 
-<footer class="footer">
-    <div class="container copyright" style="background-color: #17181B">
-    <a target="_blank" href="https://www.ncdc.noaa.gov/stormevents/">Orginal Database</a></li> 
-    </div>
-  </footer>
+</body>
 </html>

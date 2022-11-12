@@ -8,8 +8,8 @@
     },
     "contributors": [
         {
-            "name": "",
-            "email": ""
+            "name": "Ani Lamichhane",
+            "email": "lami5034@stthomas.edu"
         },
         {
             "name": "",
@@ -19,9 +19,10 @@
     "main": "server.js",
     "repository": {
         "type": "git",
-        "url": ""
+        "url": "https://github.com/dist2405/MinnesotaWeather/"
     },
     "dependencies": {
+        "chart.js": "^3.9.1",
         "express": "^4.18.2",
         "sqlite3": "^5.1.2"
     }
