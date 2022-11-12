@@ -57,29 +57,34 @@ app.get('/:selected_template', (req, res) => {
 
         switch (req.params.selected_template) {
             case 'weather':
-                query = 'SELECT name as weather, strftime(\'%Y\', date_time) as year, deaths_direct as direct_deaths, deaths_indirect as indirect_deaths, damage_property as property_damage, damage_crops as crops_damaged, injuries_direct as direct_injuries, injuries_indirect as indirect_injuries FROM Users, Types';
+                query = 'SELECT name as weather, strftime(\'%Y\', date_time) as year, SUM(deaths_direct) as direct_deaths, SUM(deaths_indirect) as indirect_deaths, SUM(damage_property) as property_damage, SUM(damage_crops) as crops_damaged, SUM(injuries_direct) as direct_injuries, SUM(injuries_indirect) as indirect_injuries FROM Users LEFT JOIN Types ON Users.type = Types.id ';
                 if(req.query['group']) {
                     heading = req.query.group.toUpperCase().replace('_','  ');
                 } else {
                     heading = "Types of Weather Systems";
                 }
-                // query = query + " GROUP By strftime('%Y',date_time),weather";
+                query = query + " GROUP By strftime('%Y',date_time),name";
                 break;
             case 'year':
-                query = 'SELECT strftime(\'%Y\', date_time) as year, Types.name as type, deaths_direct as direct_deaths, deaths_indirect as indirect_deaths, damage_property as property_damage, damage_crops as crops_damaged, injuries_direct as direct_injuries, injuries_indirect as indirect_injuries FROM Users, Types';
+                query = 'SELECT strftime(\'%Y\', date_time) as year, Types.name as type, SUM(deaths_direct) as direct_deaths, SUM(deaths_indirect) as indirect_deaths, SUM(damage_property) as property_damage, SUM(damage_crops) as crops_damaged, SUM(injuries_direct) as direct_injuries, SUM(injuries_indirect) as indirect_injuries FROM Users LEFT JOIN Types ON Users.type = Types.id ';
+
+                
                 if (req.query['group']) {
                     heading = req.query.group.toUpperCase().replace('_', '  ');
                 } else {
                     heading = 'Year';
                 }
+                query = query + 'GROUP BY strftime(\'%Y\', date_time), Types.name';
                 break;
             case 'county':
-                query = 'SELECT replace(cz_name, \' CO.\', \'\') as county, Types.name as type, strftime(\'%Y\',date_time) as year, deaths_direct as direct_deaths, deaths_indirect as indirect_deaths, damage_property as property_damage, damage_crops as crops_damage, injuries_direct as direct_injuries, injuries_indirect as indirect_injuries FROM Users, Types';
+                query = 'SELECT replace(cz_name, \' CO.\', \'\') as county, Types.name as type, SUM(deaths_direct) as direct_deaths, SUM(deaths_indirect) as indirect_deaths, SUM(damage_property) as property_damage, SUM(damage_crops) as crops_damaged, SUM(injuries_direct) as direct_injuries, SUM(injuries_indirect) as indirect_injuries FROM Users LEFT JOIN Types ON Users.type = Types.id ';
+
                 if (req.query['group']) {
                     heading = req.query.group.toUpperCase().replace('_', '  ');
                 } else {
                     heading = 'County';
                 }
+                query = query + 'GROUP BY replace(cz_name, \' CO.\', \'\') , Types.name';
                 break;
         }
 
