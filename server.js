@@ -64,7 +64,7 @@ app.get('/:selected_template', (req, res) => {
 
         switch (req.params.selected_template) {
             case 'weather':
-                query = 'SELECT name as weather, COUNT(date_time) as num_of_storms, strftime(\'%Y\', date_time) as year, SUM(deaths_direct) as direct_deaths, SUM(injuries_direct) as direct_injuries, SUM(damage_property) as property_damage, SUM(damage_crops) as crops_damaged FROM Users LEFT JOIN Types ON Users.type = Types.id ';
+                query = 'SELECT name as weather, COUNT(date_time) as num_of_storms, strftime(\'%Y\', date_time) as year, SUM(deaths_direct) as direct_deaths, SUM(injuries_direct) as direct_injuries, SUM(damage_property) as property_damage_$, SUM(damage_crops) as crops_damage_$ FROM Users LEFT JOIN Types ON Users.type = Types.id ';
                 if(req.query['group']) {
                     heading = req.query.group.toUpperCase().replace('_','  ');
                 } else {
@@ -73,7 +73,7 @@ app.get('/:selected_template', (req, res) => {
                 query = query + " GROUP By strftime('%Y',date_time),name";
                 break;
             case 'year':
-                query = 'SELECT strftime(\'%Y\', date_time) as year, Types.name as type, COUNT(date_time) as num_of_storms, SUM(deaths_direct) as direct_deaths, SUM(injuries_direct) as direct_injuries, SUM(damage_property) as property_damage, SUM(damage_crops) as crops_damaged FROM Users LEFT JOIN Types ON Users.type = Types.id ';
+                query = 'SELECT strftime(\'%Y\', date_time) as year, Types.name as type, COUNT(date_time) as num_of_storms, SUM(deaths_direct) as direct_deaths, SUM(injuries_direct) as direct_injuries, SUM(damage_property) as property_damage_$, SUM(damage_crops) as crops_damage_$ FROM Users LEFT JOIN Types ON Users.type = Types.id ';
 
 
                 if (req.query['group']) {
@@ -84,7 +84,7 @@ app.get('/:selected_template', (req, res) => {
                 query = query + 'GROUP BY strftime(\'%Y\', date_time), Types.name';
                 break;
             case 'county':
-                query = 'SELECT replace(cz_name, \' CO.\', \'\') as county, Types.name as type, COUNT(date_time) as num_of_storms, SUM(deaths_direct) as direct_deaths, SUM(injuries_direct) as direct_injuries, SUM(damage_property) as property_damage, SUM(damage_crops) as crops_damaged FROM Users LEFT JOIN Types ON Users.type = Types.id ';
+                query = 'SELECT replace(cz_name, \' CO.\', \'\') as county, Types.name as type, COUNT(date_time) as num_of_storms, SUM(deaths_direct) as direct_deaths, SUM(injuries_direct) as direct_injuries, SUM(damage_property) as property_damage_$, SUM(damage_crops) as crops_damage_$ FROM Users LEFT JOIN Types ON Users.type = Types.id ';
 
                 if (req.query['group']) {
                     heading = req.query.group.toUpperCase().replace('_', '  ');
