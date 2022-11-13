@@ -248,16 +248,11 @@ app.get('/:selected_template', (req, res) => {
                 chartInfo = JSON.stringify(chartInfo);
             }
 
-
-
-
-
-
             // bake our data into response and send it
             const response = template.replace('%%heading%%', heading)
                 .replace('%%Choices%%', selections)
-                .replace('%%next%%', nextbutton)
-                .replace('%%previous%%', prevbutton)
+                .replace(/%%next%%/g, nextbutton)
+                .replace(/%%previous%%/g, prevbutton)
                 .replace('%%table_head%%', table_head)
                 .replace('%%table_body%%', table_body)
                 .replace('%%data%%', chartInfo);
