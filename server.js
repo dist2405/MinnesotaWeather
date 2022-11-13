@@ -1,3 +1,4 @@
+
 // Built-in Node.js modules
 let fs = require('fs');
 let path = require('path');
@@ -5,6 +6,7 @@ let path = require('path');
 // NPM modules
 let express = require('express');
 let sqlite3 = require('sqlite3');
+const Chart = require('chart.js');
 
 function toPascal(string) {
     return string.charAt(0).toUpperCase() + string.substring(1).toLowerCase();
@@ -36,6 +38,11 @@ app.get('/', (req, res) => {
     res.redirect(home);
 });
 
+
+
+
+
+
 // Example GET request handler for data about a specific template
 app.get('/favicon.ico', (req, res) => res.status(204));
 
@@ -57,7 +64,7 @@ app.get('/:selected_template', (req, res) => {
 
         switch (req.params.selected_template) {
             case 'weather':
-                query = 'SELECT name as weather, COUNT(date_time) as num_of_storms, strftime(\'%Y\', date_time) as year, SUM(deaths_direct) as direct_deaths, SUM(deaths_indirect) as indirect_deaths, SUM(damage_property) as property_damage, SUM(damage_crops) as crops_damaged, SUM(injuries_direct) as direct_injuries, SUM(injuries_indirect) as indirect_injuries FROM Users LEFT JOIN Types ON Users.type = Types.id ';
+                query = 'SELECT name as weather, COUNT(date_time) as num_of_storms, strftime(\'%Y\', date_time) as year, SUM(deaths_direct) as direct_deaths, SUM(damage_property) as property_damage, SUM(damage_crops) as crops_damaged, SUM(injuries_direct) as direct_injuries FROM Users LEFT JOIN Types ON Users.type = Types.id ';
                 if(req.query['group']) {
                     heading = req.query.group.toUpperCase().replace('_','  ');
                 } else {
@@ -66,7 +73,7 @@ app.get('/:selected_template', (req, res) => {
                 query = query + " GROUP By strftime('%Y',date_time),name";
                 break;
             case 'year':
-                query = 'SELECT strftime(\'%Y\', date_time) as year, Types.name as type, COUNT(date_time) as num_of_storms, SUM(deaths_direct) as direct_deaths, SUM(deaths_indirect) as indirect_deaths, SUM(damage_property) as property_damage, SUM(damage_crops) as crops_damaged, SUM(injuries_direct) as direct_injuries, SUM(injuries_indirect) as indirect_injuries FROM Users LEFT JOIN Types ON Users.type = Types.id ';
+                query = 'SELECT strftime(\'%Y\', date_time) as year, Types.name as type, COUNT(date_time) as num_of_storms, SUM(deaths_direct) as direct_deaths, SUM(damage_property) as property_damage, SUM(damage_crops) as crops_damaged, SUM(injuries_direct) as direct_injuries FROM Users LEFT JOIN Types ON Users.type = Types.id ';
 
 
                 if (req.query['group']) {
@@ -77,7 +84,7 @@ app.get('/:selected_template', (req, res) => {
                 query = query + 'GROUP BY strftime(\'%Y\', date_time), Types.name';
                 break;
             case 'county':
-                query = 'SELECT replace(cz_name, \' CO.\', \'\') as county, Types.name as type, COUNT(date_time) as num_of_storms, SUM(deaths_direct) as direct_deaths, SUM(deaths_indirect) as indirect_deaths, SUM(damage_property) as property_damage, SUM(damage_crops) as crops_damaged, SUM(injuries_direct) as direct_injuries, SUM(injuries_indirect) as indirect_injuries FROM Users LEFT JOIN Types ON Users.type = Types.id ';
+                query = 'SELECT replace(cz_name, \' CO.\', \'\') as county, Types.name as type, COUNT(date_time) as num_of_storms, SUM(deaths_direct) as direct_deaths, SUM(damage_property) as property_damage, SUM(damage_crops) as crops_damaged, SUM(injuries_direct) as direct_injuries FROM Users LEFT JOIN Types ON Users.type = Types.id ';
 
                 if (req.query['group']) {
                     heading = req.query.group.toUpperCase().replace('_', '  ');
@@ -95,17 +102,24 @@ app.get('/:selected_template', (req, res) => {
                 return;
             }
 
+
+            
+
+
             let table_head = '';
             let table_body = '';
 
             if (req.query['group']) {
-                let value = req.query.group.split('_').map(toPascal).join(' ').toUpperCase().trim();
+                let value = req.query.group.split('_').map(toPascal).join(' ').trim();
                 heading = value;
             } else {
                 heading = toPascal(req.params.selected_template);
             }
 
             const selection = [];
+
+
+
 
             // create array of choices
             for (const row of rows) {
@@ -156,19 +170,32 @@ app.get('/:selected_template', (req, res) => {
                     return;
                 }
             }
-
+            const dataArray = [];
             // iterate over rows
             for (const row of rows) {
                 // start a row
                 table_body += '<tr>';
+                var arr = []
                 // iterate over the properties of the row object
                 for (const property in row) {
                     var value = typeof row[property] == 'string' ? row[property].replace('"', '').replace('"', '').split(' ').map(toPascal).join(' ').trim() : row[property];
                     table_body += `<td>${value}</td>`;
+                    arr.push(value);
                 }
                 //end our row
+                dataArray.push(arr);
                 table_body += '</tr>';
             }
+
+
+
+            var col1 = [];
+            var col2 = [];
+            for(let i = 0; i < dataArray.length; i++){
+                col1.push(dataArray[i][1]);
+                col2.push(dataArray[i][2]);
+            }
+
 
             // setup choice/grouping dropdown
             let select = false;
@@ -188,13 +215,52 @@ app.get('/:selected_template', (req, res) => {
                 selections = `"<option value="All">All</option>` + selections;
             }
 
+            var arr = [];
+            var labels = [];
+            var title = "";
+
+
+            var chartInfo = "NO";
+            if(heading != "County" && heading != "Weather" && heading != "Year"){
+                if(heading == "Thunderstorm Wind" || heading == "Tornado" || heading == "Hail") {
+                    arr = col1;
+                    labels = col2;
+                    title = heading + " Count Per Year";
+                }
+                else if(parseInt(heading) != NaN) {
+                    arr = col2;
+                    labels = col1;
+                    title = heading + " Count Per Weather Type";
+                }
+                else {
+                    arr = col2;
+                    labels = col1;
+                    title = heading + " Count Per Weather Type";
+                }
+
+                chartInfo = {
+                    type: heading,
+                    title: title,
+                    data: arr,
+                    labels: labels
+                };
+
+                chartInfo = JSON.stringify(chartInfo);
+            }
+
+
+
+
+
+
             // bake our data into response and send it
             const response = template.replace('%%heading%%', heading)
                 .replace('%%Choices%%', selections)
                 .replace('%%next%%', nextbutton)
                 .replace('%%previous%%', prevbutton)
                 .replace('%%table_head%%', table_head)
-                .replace('%%table_body%%', table_body);
+                .replace('%%table_body%%', table_body)
+                .replace('%%data%%', chartInfo);
 
             res.status(200).type('html').send(response);
         });

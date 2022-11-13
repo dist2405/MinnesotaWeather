@@ -7,6 +7,9 @@
     <title>Minnesota Weather!</title>
     <link rel="stylesheet" href="/css/foundation.css">
     <link rel="stylesheet" href="/css/weatherdata.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="/js/chartStuff.js"></script>   
 
     <script type="text/javascript">
         function ifelsefunction() {
@@ -57,7 +60,9 @@
                 </select>
                 <button class="button small expanded" onclick="ifelsefunction()">Apply Selected Option</button>
 
-                <canvas id="myChart" width="400" height="400"></canvas>
+                <p id="data" style="display:none">%%data%%</p>
+                <div id="forChart"></div>
+                
 
                 <div>
                     <div class="cell large-18" style="background-color: #e7e9e9;">

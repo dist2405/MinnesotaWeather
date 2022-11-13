@@ -12,8 +12,8 @@
             "email": "lami5034@stthomas.edu"
         },
         {
-            "name": "",
-            "email": ""
+            "name": "Audrey Jenkins",
+            "email": "jenk2184@stthomas.edu"
         }
     ],
     "main": "server.js",
@@ -24,6 +24,7 @@
     "dependencies": {
         "chart.js": "^3.9.1",
         "express": "^4.18.2",
+        "require.js": "^1.0.0",
         "sqlite3": "^5.1.2"
     }
 }

@@ -7,7 +7,7 @@
     <title>Minnesota Weather!</title>
     <link rel="stylesheet" href="/css/foundation.css">
     <link rel="stylesheet" href="/css/weatherdata.css">
-
+     
     <script type="text/javascript">
         function ifelsefunction() {
             var value = document.getElementById("selpage").value.split(' ').join("_");
@@ -18,10 +18,18 @@
             window.open(url, "_self");
         } 
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/js/chartStuff.js"></script>   
+
+
+
+    
+
 </head>
 
 <body>
 
+    
     <section id="margin" class="container">
         <section id="top-navigation" class="container">
             <div class="title-bar" data-responsive-toggle="responsive-menu" data-hide-for="medium">
@@ -44,6 +52,8 @@
             </div>
 
         </section>
+
+        
         <div class="grid-container">
             <!-- `grid-x` represents a row -->
             <h1>%%heading%%</h1>
@@ -59,8 +69,16 @@
                     %%Choices%%
                 </select>
                 <button class="button small expanded" onclick="ifelsefunction()">Apply Selected Option</button>
+<<<<<<< Updated upstream
+                <p id="data" style="display:none">%%data%%</p>
+                <div id="forChart"></div>
                 <li><a href="/1965Storm.html">1965 Storm</a></li>
-                <canvas id="myChart" width="400" height="400"></canvas>
+
+=======
+
+
+                
+>>>>>>> Stashed changes
 
                 <div>
                     <div class="cell large-18" style="background-color: #e7e9e9;">
@@ -102,6 +120,7 @@
     <script type="application/javascript">
         $(document).foundation();
     </script>
+     
 </body>
 
 </html>
