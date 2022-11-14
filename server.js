@@ -132,25 +132,6 @@ app.get('/:selected_template', (req, res) => {
                 table_head += `>${property.split('_').map(toPascal).join(' ').trim()}</th>`;
             }
 
-            // setup next/previous buttons
-            if (!(req.query['group'])) {
-                prevbutton = `/${req.params.selected_template}?group=${selection[selection.length - 1]}`;
-                nextbutton = `/${req.params.selected_template}?group=${selection[0]}`;
-            } else {
-                let row = selection.indexOf(heading.split(' ').map(toPascal).join(' ').replace('"', '').replace('"', '').trim());
-
-                if (row == 0) {
-                    prevbutton = `/${req.params.selected_template}?group=${selection[selection.length - 1]}`;
-                    nextbutton = `/${req.params.selected_template}?group=${selection[1]}`;
-                } else if (row == selection.length - 1) {
-                    prevbutton = `/${req.params.selected_template}?group=${selection[row - 1]}`;
-                    nextbutton = `/${req.params.selected_template}?group=${selection[0]}`;
-                } else {
-                    prevbutton = `/${req.params.selected_template}?group=${selection[row - 1]}`;
-                    nextbutton = `/${req.params.selected_template}?group=${selection[row + 1]}`;
-                }
-            }
-
             if (req.query['group']) {
                 if (req.params.selected_template == 'weather') {
                     rows = rows.filter(r => r[req.params.selected_template] == ` "${req.query.group.split('_').join(' ')}"`);
@@ -164,6 +145,26 @@ app.get('/:selected_template', (req, res) => {
                     return;
                 }
             }
+
+            // setup next/previous buttons
+            if (!(req.query['group'])) {
+                prevbutton = `/${req.params.selected_template}?group=${selection[selection.length - 1]}`;
+                nextbutton = `/${req.params.selected_template}?group=${selection[0]}`;
+            } else {
+                let row = selection.indexOf(heading.split(' ').map(toPascal).join(' ').replace('"', '').replace('"', '').trim());
+
+                if (row == 0) {
+                    prevbutton = `/${req.params.selected_template}?group=${selection[selection.length - 1].split(' ').join('_')}`;
+                    nextbutton = `/${req.params.selected_template}?group=${selection[1].split(' ').join('_')}`;
+                } else if (row == selection.length - 1) {
+                    prevbutton = `/${req.params.selected_template}?group=${selection[row - 1].split(' ').join('_')}`;
+                    nextbutton = `/${req.params.selected_template}?group=${selection[0].split(' ').join('_')}`;
+                } else {
+                    prevbutton = `/${req.params.selected_template}?group=${selection[row - 1].split(' ').join('_')}`;
+                    nextbutton = `/${req.params.selected_template}?group=${selection[row + 1].split(' ').join('_')}`;
+                }
+            }
+
             const dataArray = [];
             // iterate over rows
             for (const row of rows) {
@@ -196,7 +197,7 @@ app.get('/:selected_template', (req, res) => {
 
             for (let i = 0; i < selection.length; i++) {
                 selections += `<option value="${selection[i].replace('"', '').replace('"', '').split(' ').map(toPascal).join(' ').trim()}" `
-                if (selection[i].toUpperCase() == heading) {
+                if (selection[i] == heading) {
                     select = true;
                     selections += "selected"
                 }
